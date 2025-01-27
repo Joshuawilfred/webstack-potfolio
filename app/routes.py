@@ -1,5 +1,6 @@
 from flask import Blueprint, render_template, redirect, url_for, flash
 from flask_login import login_user, logout_user, login_required
+from werkzeug.security import generate_password_hash, check_password_hash
 from app import db
 from app.models import User
 from app.forms import SignupForm, LoginForm
@@ -26,11 +27,14 @@ auth_routes = Blueprint('auth', __name__)
 def signup():
     form = SignupForm()
     if form.validate_on_submit():
+        # Hash the password before saving the user
+        hashed_password = generate_password_hash(form.password.data, method='pbkdf2:sha256')
+
         # Create a new user
         user = User(
             username=form.username.data,
             email=form.email.data,
-            password=form.password.data  # In a real app, hash the password!
+            password=hashed_password  # Store the hashed password
         )
         db.session.add(user)
         db.session.commit()
@@ -44,7 +48,7 @@ def login():
     if form.validate_on_submit():
         # Find the user by email
         user = User.query.filter_by(email=form.email.data).first()
-        if user and user.password == form.password.data:  # In a real app, verify hashed password!
+        if user and check_password_hash(user.password, form.password.data):  # Check hashed password
             login_user(user)
             flash('Logged in successfully!', 'success')
             return redirect(url_for('main.index'))
