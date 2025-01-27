@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Art Gallery</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="bg-gray-100">
+    <nav class="bg-white shadow">
+      <div class="container mx-auto px-6 py-4">
+        <div class="flex justify-between items-center">
+          <a
+            href="{{ url_for('main.index') }}"
+            class="text-xl font-bold text-gray-800"
+            >Art Gallery</a
+          >
+          <div class="flex space-x-4">
+            {% if current_user.is_authenticated %}
+            <span class="text-gray-800 flex gap-2 items-center ">
+              <i data-feather="user" class="w-5 h-5"></i>
+              {{ current_user.username }}!
+              </span
+            >
+            <a
+              href="{{ url_for('auth.logout') }}"
+              class="text-red-600 hover:text-red-800"
+              >Logout</a
+            >
+            {% else %}
+            <a
+              href="{{ url_for('auth.signup') }}"
+              class="text-gray-800 hover:text-gray-600"
+              >Sign Up</a
+            >
+            <a
+              href="{{ url_for('auth.login') }}"
+              class="text-gray-800 hover:text-gray-600"
+              >Login</a
+            >
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </nav>
+    <main class="container mx-auto px-6 py-8">
+      {% block content %}{% endblock %}
+    </main>
+
+    <!-- Include Feather Icons -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/feather-icons/4.29.2/feather.min.js"></script>
+    <script>
+      feather.replace(); // Replaces placeholders with SVG icons
+    </script>
+  </body>
+</html>
