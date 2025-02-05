@@ -5,6 +5,37 @@
     <h1 class="text-3xl font-bold mb-6">Upload Artwork</h1>
     <form method="POST" enctype="multipart/form-data" class="max-w-lg mx-auto">
         {{ form.hidden_tag() }}
+        <div class="max-w-md mx-auto rounded-lg overflow-hidden">
+            <div class="w-full p-3">
+                <div 
+                    id="file-upload" 
+                    class="relative h-48 rounded-lg border-2 border-blue-500 bg-gray-50 flex justify-center items-center shadow-lg hover:shadow-xl transition-shadow duration-300 ease-in-out"
+                >
+                    <div class="absolute flex flex-col items-center" id="upload-text">
+                        <img
+                            alt="File Icon"
+                            class="mb-3"
+                            src="../static/images/icons8-jpg-64.png"
+                        />
+                        <span class="block text-gray-500 font-semibold"
+                            >Drag & drop your artwork here</span
+                        >
+                        <span class="block text-gray-400 font-normal mt-1"
+                            >or click to upload</span
+                        >
+                    </div>
+                    
+                    {{ form.image(
+                        class="h-full w-full opacity-0 cursor-pointer absolute top-0 left-0", 
+                        id="image-input"
+                    ) }}
+                </div>
+                
+                <div id="file-preview" class="mt-4 hidden">
+                    <img id="preview-image" class="max-h-48 mx-auto" />
+                </div>
+            </div>
+        </div>
         <div class="mb-4">
             {{ form.title.label(class="block text-gray-700 text-sm font-bold mb-2") }}
             {{ form.title(class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline") }}
@@ -12,10 +43,6 @@
         <div class="mb-4">
             {{ form.description.label(class="block text-gray-700 text-sm font-bold mb-2") }}
             {{ form.description(class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline") }}
-        </div>
-        <div class="mb-4">
-            {{ form.image.label(class="block text-gray-700 text-sm font-bold mb-2") }}
-            {{ form.image(class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline") }}
         </div>
         <div class="flex items-center justify-between">
             {{ form.submit(class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline") }}

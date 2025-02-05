@@ -80,6 +80,12 @@ def upload_artwork():
         return redirect(url_for('main.gallery'))
     return render_template('upload_artwork.html', form=form)
 
+# View artwork one by one
+@main_routes.route('/artwork/<int:artwork_id>')
+def artwork_detail(artwork_id):
+    artwork = Artwork.query.get_or_404(artwork_id)
+    return render_template('artwork_detail.html', artwork=artwork)
+
 # Helper functions for QR code generation and embedding
 def generate_qr_code(url):
     qr = qrcode.QRCode(version=1, box_size=10, border=5)
