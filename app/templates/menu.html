@@ -1,0 +1,32 @@
+<nav class="bg-white shadow">
+    <div class="container mx-auto px-6 py-4">
+        <div class="flex justify-between items-center">
+            <a href="{{ url_for('main.index') }}" class="text-xl font-bold text-gray-800">Art Gallery</a>
+            <div class="flex space-x-4">
+                {% if current_user.is_authenticated %}
+                <!-- Authenticated User Menu -->
+                <div class="flex space-x-4 justify-center">
+                    <a href="{{ url_for('main.gallery') }}" class="text-blue-600 hover:text-blue-800 hover:underline">
+                        <span class="flex gap-1 items-center">
+                            <i data-feather="compass" class="w-5 h-5"></i>
+                            Explore
+                        </span>
+                    </a>
+                    <a href="{{ url_for('main.upload_artwork') }}" class="text-green-600 hover:text-green-700 hover:underline"
+                        >Upload Artwork</a
+                    >
+                    <span class="text-gray-800 flex gap-2 items-center">
+                        <i data-feather="user" class="w-5 h-5"></i>
+                        {{ current_user.username }}
+                    </span>
+                    <a href="{{ url_for('auth.logout') }}" class="text-red-600 hover:text-red-800">Logout</a>
+                </div>
+                {% else %}
+                <!-- Non-Authenticated User Menu -->
+                <a href="{{ url_for('auth.signup') }}" class="text-gray-800 hover:text-gray-600">Sign Up</a>
+                <a href="{{ url_for('auth.login') }}" class="text-gray-800 hover:text-gray-600">Login</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</nav>

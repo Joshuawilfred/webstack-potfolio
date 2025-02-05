@@ -1,12 +1,40 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-    <!-- Artwork cards will go here -->
-    <div class="bg-white p-6 rounded-lg shadow">
-        <img src="https://via.placeholder.com/300" alt="Artwork" class="w-full h-48 object-cover mb-4">
-        <h2 class="text-xl font-bold text-gray-800">Artwork Title</h2>
-        <p class="text-gray-600">Artist Name</p>
+<div class="container mx-auto px-4 py-8">
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-3xl font-bold">Gallery</h1>
+        <select id="sort-select" 
+                class="p-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
+            <option value="latest" {% if sort_by == 'latest' %}selected{% endif %}>Newest First</option>
+            <option value="oldest" {% if sort_by == 'oldest' %}selected{% endif %}>Oldest First</option>
+            <option value="alphabetical" {% if sort_by == 'alphabetical' %}selected{% endif %}>A-Z</option>
+        </select>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {% for artwork in artworks %}
+        <div class="bg-white rounded-2xl shadow-lg overflow-hidden transition-transform transform hover:scale-105">
+            <img src="{{ url_for('static', filename=artwork.image_url.split('static/')[-1]) }}" 
+                 alt="{{ artwork.title }}" 
+                 class="w-full h-56 object-cover">
+            <div class="p-4">
+                <h2 class="text-lg font-bold text-gray-800">{{ artwork.title }}</h2>
+                <p class="text-gray-600 text-sm mt-1">
+                    <a href="{{ url_for('main.artist_profile', username=artwork.artist.username) }}" 
+                       class="text-blue-500 hover:underline">
+                        {{ artwork.artist.username }}
+                    </a>
+                </p>
+            </div>
+        </div>
+        {% endfor %}
     </div>
 </div>
+
+<script>
+    document.getElementById('sort-select').addEventListener('change', function() {
+        window.location.href = "{{ url_for('main.gallery') }}" + "?sort=" + this.value;
+    });
+</script>
 {% endblock %}
