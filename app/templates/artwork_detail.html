@@ -1,0 +1,59 @@
+{% extends "base.html" %} {% block content %}
+<div class="container mx-auto px-4 py-8 max-w-6xl">
+    <div class="grid md:grid-cols-2 gap-8">
+        <!-- Artwork Image -->
+        <div class="bg-white rounded-2xl shadow-xl overflow-hidden">
+            <img
+                src="{{ url_for('static', filename=artwork.image_url.split('static/')[-1]) }}"
+                alt="{{ artwork.title }}"
+                class="w-full h-auto object-contain max-h-[600px]"
+            />
+        </div>
+        <!-- Artwork Details -->
+        <div>
+            <h1 class="text-3xl font-bold mb-4">{{ artwork.title }}</h1>
+
+            <div class="flex items-center space-x-4 mb-6">
+                <img
+                    src="https://img.icons8.com/ios/50/artist.png"
+                    alt="{{ artwork.artist.username }}"
+                    class="w-[50px] h-[50px] p-1 rounded-t-full bg-gray-400 rounded-bl-full"
+                />
+                <div>
+                    <a
+                        href="{{ url_for('main.artist_profile', username=artwork.artist.username) }}"
+                        class="text-xl font-semibold hover:text-blue-600"
+                    >
+                        {{ artwork.artist.username }}
+                    </a>
+                    <p class="text-gray-500">{{ artwork.created_at.strftime('%B %d, %Y') if artwork.created_at else 'N/A' }} </p>
+                </div>
+
+                {% if current_user.is_authenticated and current_user != artwork.artist %}
+                <button class="ml-auto px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
+                    Follow Artist
+                </button>
+                {% endif %}
+            </div>
+
+            <div class="prose max-w-none">
+                <h2 class="text-xl font-semibold mb-2">Description</h2>
+                <p>{{ artwork.description or 'No description provided.' }}</p>
+            </div>
+
+            <div class="mt-6 space-y-2">
+                <h2 class="text-xl font-semibold mb-2">Artwork Details</h2>
+                <p><strong>Uploaded:</strong> {{ artwork.created_at.strftime('%B %d, %Y at %I:%M %p') if artwork.created_at else 'N/A'}}</p>
+                <p><strong>Unique Artwork ID:</strong> {{ artwork.id }}</p>
+            </div>
+
+            {% if current_user == artwork.artist %}
+            <div class="mt-6 flex space-x-4">
+                <button class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600">Edit Artwork</button>
+                <button class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600">Delete Artwork</button>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
