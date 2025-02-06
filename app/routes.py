@@ -1,3 +1,4 @@
+# routes.py
 from flask import Blueprint, render_template, redirect, url_for, flash, request, current_app
 from flask_login import login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -6,13 +7,13 @@ from app import db
 from app.models import User, Artwork
 from app.forms import SignupForm, LoginForm, ArtworkForm
 import os
-import secret
-import qrcode
-from stegano import lsb
+import secrets
 from PIL import Image
-import io
-import base64
 from io import BytesIO
+from datetime import datetime
+
+# Import QR code functions
+from .my_qrcode import embed_qr_code, scan_qr_code
 
 # Create a Blueprint for main routes
 main_routes = Blueprint('main', __name__)
@@ -36,7 +37,6 @@ def gallery():
 
     return render_template('gallery.html', artworks=artworks, sort_by=sort_by)
 
-
 @main_routes.route('/artist/<username>')
 def artist_profile(username):
     artist = User.query.filter_by(username=username).first_or_404()
@@ -58,19 +58,12 @@ def upload_artwork():
 
         # Generate QR code linking to the artist's profile
         artist_profile_url = url_for('main.artist_profile', username=current_user.username, _external=True)
-        qr_image = generate_qr_code(artist_profile_url)
+        output_path = embed_qr_code(image_path, artist_profile_url)
 
-        # Embed QR code in the artwork image
-        artwork_image = Image.open(image_path)
-        secret_image = embed_qr_in_artwork(artwork_image, qr_image)
-        secret_image.save(image_path)  # Overwrite the original image with the embedded QR code
-
-        # Save artwork details to the database
-        image_url = os.path.join('static', 'uploads', 'artworks', filename).replace("\\", "/")
         artwork = Artwork(
             title=form.title.data,
             description=form.description.data,
-            image_url=image_url,
+            image_url=output_path,
             artist_id=current_user.id
         )
         db.session.add(artwork)
@@ -80,29 +73,11 @@ def upload_artwork():
         return redirect(url_for('main.gallery'))
     return render_template('upload_artwork.html', form=form)
 
-# View artwork one by one
+
 @main_routes.route('/artwork/<int:artwork_id>')
 def artwork_detail(artwork_id):
     artwork = Artwork.query.get_or_404(artwork_id)
     return render_template('artwork_detail.html', artwork=artwork)
-
-# Helper functions for QR code generation and embedding
-def generate_qr_code(url):
-    qr = qrcode.QRCode(version=1, box_size=10, border=5)
-    qr.add_data(url)
-    qr.make(fit=True)
-    qr_img = qr.make_image(fill='black', back_color='white')
-    return qr_img
-
-def embed_qr_in_artwork(artwork_image, qr_image):
-    # Convert QR image to bytes
-    buffered = BytesIO()
-    qr_image.save(buffered, format="PNG")
-    qr_text = base64.b64encode(buffered.getvalue()).decode()  # Convert image to base64 string
-
-    # Embed QR code as text using stegano
-    secret_image = lsb.hide(artwork_image, qr_text)
-    return secret_image
 
 # Create a Blueprint for authentication routes
 auth_routes = Blueprint('auth', __name__)
