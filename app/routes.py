@@ -23,25 +23,40 @@ def index():
     return render_template('index.html')
 
 @main_routes.route('/gallery')
+@login_required
 def gallery():
-    sort_by = request.args.get('sort', 'latest')
+    filter_by = request.args.get('filter', 'foryou')  # Default to 'foryou'
+    sort_by = request.args.get('sort', 'latest')  # Default sorting
 
-    if sort_by == 'latest':
-        artworks = Artwork.query.order_by(Artwork.id.desc()).all()
-    elif sort_by == 'oldest':
-        artworks = Artwork.query.order_by(Artwork.id.asc()).all()
-    elif sort_by == 'alphabetical':
-        artworks = Artwork.query.order_by(Artwork.title.asc()).all()
+    if filter_by == 'following':
+        followed_ids = [f.followed_id for f in current_user.following]  # Get followed artist IDs
+        artworks = Artwork.query.filter(Artwork.artist_id.in_(followed_ids))
     else:
-        artworks = Artwork.query.order_by(Artwork.id.desc()).all()
+        artworks = Artwork.query  # Default: show all artworks
 
-    return render_template('gallery.html', artworks=artworks, sort_by=sort_by)
+    # Apply sorting
+    if sort_by == 'oldest':
+        artworks = artworks.order_by(Artwork.created_at.asc())
+    elif sort_by == 'alphabetical':
+        artworks = artworks.order_by(Artwork.title.asc())
+    else:
+        artworks = artworks.order_by(Artwork.created_at.desc())
+
+    return render_template('gallery.html', artworks=artworks, sort_by=sort_by, filter_by=filter_by)
 
 @main_routes.route('/artist/<username>')
 def artist_profile(username):
     artist = User.query.filter_by(username=username).first_or_404()
     artworks = Artwork.query.filter_by(artist_id=artist.id).all()
     return render_template('artist_profile.html', artist=artist, artworks=artworks)
+
+@main_routes.route('/edit-profile', methods=['POST'])
+@login_required
+def edit_profile():
+    bio = request.form.get('bio')
+    current_user.bio = bio
+    db.session.commit()
+    return redirect(url_for('main.artist_profile', username=current_user.username))
 
 @main_routes.route('/upload', methods=['GET', 'POST'])
 @login_required
@@ -177,3 +192,30 @@ def logout():
     logout_user()
     flash('Logged out successfully!', 'success')
     return redirect(url_for('main.index'))
+
+# Create a Blueprint for follow-related routes
+follow_routes = Blueprint('follow', __name__)
+
+@follow_routes.route('/follow/<int:user_id>', methods=['POST'])
+@login_required
+def follow(user_id):
+    user_to_follow = User.query.get_or_404(user_id)
+    if current_user.is_following(user_to_follow):
+        flash('You are already following this user.', 'info')
+    else:
+        current_user.follow(user_to_follow)
+        db.session.commit()
+        flash(f'You are now following {user_to_follow.username}.', 'success')
+    return redirect(request.referrer or url_for('main.index'))
+
+@follow_routes.route('/unfollow/<int:user_id>', methods=['POST'])
+@login_required
+def unfollow(user_id):
+    user_to_unfollow = User.query.get_or_404(user_id)
+    if not current_user.is_following(user_to_unfollow):
+        flash('You are not following this user.', 'info')
+    else:
+        current_user.unfollow(user_to_unfollow)
+        db.session.commit()
+        flash(f'You have unfollowed {user_to_unfollow.username}.', 'success')
+    return redirect(request.referrer or url_for('main.index'))
