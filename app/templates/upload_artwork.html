@@ -4,6 +4,7 @@
         {{ form.hidden_tag() }}
         <div class="max-w-md mx-auto rounded-lg overflow-hidden">
             <div class="w-full p-3">
+                <!-- Bug spotted: Double select image issue (leaving this unchecked)-->
                 <div
                     id="file-upload"
                     class="relative h-48 rounded-lg border-2 border-blue-500 bg-gray-50 flex justify-center items-center shadow-lg hover:shadow-xl transition-shadow duration-300 ease-in-out"
@@ -14,7 +15,7 @@
                         <span class="block text-gray-400 font-normal mt-1">or click to upload</span>
                     </div>
 
-                    {{ form.image( class="h-full w-full opacity-0 cursor-pointer absolute top-0 left-0",
+                    {{ form.image(accept="image/*", class="h-full w-full opacity-0 cursor-pointer absolute top-0 left-0",
                     id="image-input" ) }}
                 </div>
 
@@ -43,7 +44,7 @@
     document.addEventListener('DOMContentLoaded', function () {
         const fileUpload = document.getElementById('file-upload');
         const imageInput = document.getElementById('image-input');
-        const uploadText = document.getElementById('upload-text');
+        const uploadText = document.getElementById('upload-text'); 
         const filePreview = document.getElementById('file-preview');
         const previewImage = document.getElementById('preview-image');
 

@@ -17,15 +17,16 @@ def create_app():
     login_manager.init_app(app)
 
     # Importing models for SQLAlchemy discovery
-    from app.models import User, Artwork
+    from app.models import User, Artwork, Follow
 
     # Create database tables
     with app.app_context():
         db.create_all()
 
     # Register blueprints (routes)
-    from app.routes import main_routes, auth_routes
+    from app.routes import main_routes, auth_routes, follow_routes
     app.register_blueprint(main_routes)
     app.register_blueprint(auth_routes)
+    app.register_blueprint(follow_routes)
 
     return app
