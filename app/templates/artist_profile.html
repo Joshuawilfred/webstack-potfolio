@@ -17,18 +17,6 @@
                             <p class="text-white/80">{{ artist.email }}</p>
                         </div>
                     </div>
-
-                    <!-- Follow Button -->
-                    {% if current_user.is_authenticated and current_user != artist %}
-                    <form
-                        action="{% if current_user.is_following(artist) %}{{ url_for('follow.unfollow', user_id=artist.id) }}{% else %}{{ url_for('follow.follow', user_id=artist.id) }}{% endif %}"
-                        method="POST"
-                    >
-                        <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
-                            {% if current_user.is_following(artist) %} Unfollow {% else %} Follow {% endif %}
-                        </button>
-                    </form>
-                    {% endif %}
                 </div>
             </div>
 
@@ -42,6 +30,17 @@
                     <button id="edit-profile" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
                         Edit Profile
                     </button>
+                    {% endif %}
+                    <!-- Follow Button -->
+                    {% if current_user.is_authenticated and current_user != artist %}
+                    <form
+                        action="{% if current_user.is_following(artist) %}{{ url_for('follow.unfollow', user_id=artist.id) }}{% else %}{{ url_for('follow.follow', user_id=artist.id) }}{% endif %}"
+                        method="POST"
+                    >
+                        <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
+                            {% if current_user.is_following(artist) %} Unfollow {% else %} Follow {% endif %}
+                        </button>
+                    </form>
                     {% endif %}
                 </div>
 

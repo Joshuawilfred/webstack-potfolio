@@ -1,5 +1,5 @@
 # routes.py
-from flask import Blueprint, render_template, redirect, url_for, flash, request, current_app, jsonify
+from flask import Blueprint, render_template, redirect, url_for, flash, request, current_app, jsonify, session
 from flask_login import login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
@@ -112,7 +112,7 @@ def artwork_detail(artwork_id):
     artwork = Artwork.query.get_or_404(artwork_id)
     return render_template('artwork_detail.html', artwork=artwork)
 
-# Create a Blueprint for authentication routes
+# Create a Blueprint for authentication routes_
 auth_routes = Blueprint('auth', __name__)
 
 @auth_routes.route('/signup', methods=['GET', 'POST'])
@@ -132,6 +132,13 @@ def signup():
         db.session.commit()
         flash('Account created successfully! Please log in.', 'success')
         return redirect(url_for('auth.login'))
+    
+    # Display form errors if any
+    if form.errors:
+        for field, errors in form.errors.items():
+            for error in errors:
+                flash(f"{field}: {error}", 'danger')
+    
     return render_template('signup.html', form=form)
 
 @auth_routes.route('/login', methods=['GET', 'POST'])
@@ -149,10 +156,17 @@ def login():
             return redirect(url_for('auth.login'))
 
         login_user(user)
-        flash('Logged in successfully!', 'success')
+        # flash('Logged in successfully!', 'success')
         return redirect(url_for('main.index'))
 
+    # Display form errors if any
+    if form.errors:
+        for field, errors in form.errors.items():
+            for error in errors:
+                flash(f"{field}: {error}", 'danger')
+    
     return render_template('login.html', form=form)
+
 
 @auth_routes.route('/forgot-password', methods=['GET', 'POST'])
 def forgot_password():
@@ -164,24 +178,46 @@ def forgot_password():
             flash('No account found with this email.', 'danger')
             return redirect(url_for('auth.forgot_password'))
 
-        # Generate a random token :)
+        # Generate a random token
         token = secrets.token_hex(16)
+        # Store the token in the user's session
+        session['reset_token'] = token
+        session['reset_email'] = email
         
         reset_link = url_for('auth.reset_password', token=token, _external=True)
-        print(f'Password reset link (for demo): {reset_link}')  # Simulating email
-
-        flash('If this email exists, a reset link has been sent.', 'info')
-        return redirect(url_for('auth.login'))
+        
+        # For demo purposes, return the reset link directly on the page
+        flash(f'Password reset link: {reset_link}', 'info')
+        return render_template('forgot_password.html', reset_link=reset_link)
 
     return render_template('forgot_password.html')
 
 @auth_routes.route('/reset-password/<token>', methods=['GET', 'POST'])
 def reset_password(token):
     if request.method == 'POST':
+        if 'reset_email' not in session or 'reset_token' not in session:
+            flash('Session expired. Please request a new password reset.', 'danger')
+            return redirect(url_for('auth.forgot_password'))
+        
+        email = session.pop('reset_email')
+        session_token = session.pop('reset_token')
+        
+        if token != session_token:
+            flash('Invalid or expired token.', 'danger')
+            return redirect(url_for('auth.forgot_password'))
+        
+        user = User.query.filter_by(email=email).first()
+        
+        if not user:
+            flash('No account found with this email.', 'danger')
+            return redirect(url_for('auth.forgot_password'))
+        
         new_password = request.form.get('password')
         hashed_password = generate_password_hash(new_password, method='pbkdf2:sha256')
 
-        print(f'Password reset successful for token: {token}')
+        user.password = hashed_password #update in db
+        db.session.commit() #save
+
         flash('Password reset successful! Try logging in.', 'success')
         return redirect(url_for('auth.login'))
 
@@ -191,7 +227,7 @@ def reset_password(token):
 @login_required
 def logout():
     logout_user()
-    flash('Logged out successfully!', 'success')
+    print('Logged out successfully!', 'success')
     return redirect(url_for('main.index'))
 
 # Create a Blueprint for follow-related routes
@@ -206,7 +242,7 @@ def follow(user_id):
     else:
         current_user.follow(user_to_follow)
         db.session.commit()
-        flash(f'You are now following {user_to_follow.username}.', 'success')
+        print(f'You are now following {user_to_follow.username}.', 'success')
     return redirect(request.referrer or url_for('main.index'))
 
 @follow_routes.route('/unfollow/<int:user_id>', methods=['POST'])
