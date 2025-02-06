@@ -4,11 +4,19 @@
 <div class="container mx-auto px-4 py-8">
     <div class="flex justify-between items-center mb-6">
         <h1 class="text-3xl font-bold">Gallery</h1>
-        <span><a href="#" class="hover:underline">For you</a> | <a href="#" class="hover:underline">Following </a></span>
-        <select id="sort-select" 
-                class="p-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
+        <span>
+            <a href="{{ url_for('main.gallery', filter='foryou', sort=sort_by) }}"
+               class="hover:underline {% if filter_by == 'foryou' %}font-bold{% endif %}">
+                For You
+            </a> | 
+            <a href="{{ url_for('main.gallery', filter='following', sort=sort_by) }}"
+               class="hover:underline {% if filter_by == 'following' %}font-bold{% endif %}">
+                Following
+            </a>
+        </span>
+        <select id="sort-select" class="p-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
             <option value="latest" {% if sort_by == 'latest' %}selected{% endif %}>Newest First</option>
-            <option value="oldest" {% if sort_byartwork == 'oldest' %}selected{% endif %}>Oldest First</option>
+            <option value="oldest" {% if sort_by == 'oldest' %}selected{% endif %}>Oldest First</option>
             <option value="alphabetical" {% if sort_by == 'alphabetical' %}selected{% endif %}>A-Z</option>
         </select>
     </div>
@@ -23,7 +31,8 @@
                 <h2 class="text-lg font-bold text-gray-800">
                     <a href="{{ url_for('main.artwork_detail', artwork_id=artwork.id) }}">
                         {{ artwork.title }}
-                    </a></h2>
+                    </a>
+                </h2>
                 <p class="text-gray-600 text-sm mt-1">
                     <a href="{{ url_for('main.artist_profile', username=artwork.artist.username) }}" 
                        class="text-blue-500 hover:underline">
@@ -38,7 +47,8 @@
 
 <script>
     document.getElementById('sort-select').addEventListener('change', function() {
-        window.location.href = "{{ url_for('main.gallery') }}" + "?sort=" + this.value;
+        let currentFilter = "{{ filter_by }}";
+        window.location.href = "{{ url_for('main.gallery') }}" + "?filter=" + currentFilter + "&sort=" + this.value;
     });
 </script>
 {% endblock %}
