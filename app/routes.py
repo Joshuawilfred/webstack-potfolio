@@ -1,5 +1,5 @@
 # routes.py
-from flask import Blueprint, render_template, redirect, url_for, flash, request, current_app
+from flask import Blueprint, render_template, redirect, url_for, flash, request, current_app, jsonify
 from flask_login import login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
@@ -73,6 +73,23 @@ def upload_artwork():
         return redirect(url_for('main.gallery'))
     return render_template('upload_artwork.html', form=form)
 
+@main_routes.route('/scan_qr', methods=['POST'])
+def scan_qr():
+    """Scan an artwork for an embedded QR code"""
+    data = request.get_json()
+    image_url = data.get("image_url")
+
+    if not image_url:
+        return jsonify({"success": False, "message": "No image URL provided."})
+
+    # Convert relative URL to absolute file path
+    image_path = os.path.join(current_app.root_path, 'static', image_url.split('static/')[-1])
+
+    try:
+        artist_url = scan_qr_code(image_path)
+        return jsonify({"success": True, "message": f"✓ Verification successful! Artist URL: {artist_url}"})
+    except Exception as e:
+        return jsonify({"success": False, "message": f"❌ Error: {str(e)}"})
 
 @main_routes.route('/artwork/<int:artwork_id>')
 def artwork_detail(artwork_id):
