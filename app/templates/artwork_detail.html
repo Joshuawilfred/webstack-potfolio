@@ -77,37 +77,54 @@
 </div>
 
 <script>
-    document.getElementById('scan-btn').addEventListener('click', function () {
-        const outputBox = document.getElementById('scan-output');
-        outputBox.classList.add('border', 'bg-gray-800');
-        const imageUrl = document.getElementById('artwork-image').src;
-
-        outputBox.innerHTML = '⌛ Scanning...'; // Show loading message
-
-        fetch("{{ url_for('main.scan_qr') }}", {
-            method: 'POST',
-            body: JSON.stringify({ image_url: imageUrl }),
-            headers: {
-                'Content-Type': 'application/json',
-                'X-Requested-With': 'XMLHttpRequest',
-            },
-        })
-            .then((response) => response.json())
-            .then((data) => {
-                outputBox.innerHTML = ''; // Clear loading message
-                typeWriterEffect(outputBox, data.message);
-            })
-            .catch((error) => {
-                outputBox.innerHTML = '❌ Failed to scan QR code.';
-                console.error(error);
-            });
-    });
-
-    function typeWriterEffect(element, text, i = 0) {
-        if (i < text.length) {
-            element.innerHTML += text.charAt(i);
-            setTimeout(() => typeWriterEffect(element, text, i + 1), 30);
+function typeWriterEffect(element, text, callback, i = 0) {
+    if (i < text.length) {
+        if (text[i] === "\n") {
+            element.insertAdjacentHTML("beforeend", "<br>"); // Keep proper formatting
+        } else {
+            element.innerHTML += text[i];
         }
+        setTimeout(() => typeWriterEffect(element, text, callback, i + 1), 30);
+    } else if (callback) {
+        callback();
     }
+}
+
+document.getElementById('scan-btn').addEventListener('click', function () {
+    const outputBox = document.getElementById('scan-output');
+    outputBox.classList.add('border', 'bg-gray-800');
+    const imageUrl = document.getElementById('artwork-image').src;
+
+    outputBox.innerHTML = '⌛ Scanning...';
+
+    fetch("{{ url_for('main.scan_qr') }}", {
+        method: 'POST',
+        body: JSON.stringify({ image_url: imageUrl }),
+        headers: {
+            'Content-Type': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest',
+        },
+    })
+    .then(response => response.json())
+    .then(data => {
+        outputBox.innerHTML = '';
+
+        if (data.success) {
+            const metadata = data.metadata;
+            const message = `🎨 Title: ${metadata.artwork_title}\n👤 Artist: ${metadata.artist_name}\n📅 Uploaded: ${new Date(metadata.date_uploaded).toLocaleString()}\n`;
+            typeWriterEffect(outputBox, message, () => {
+                const link = `🔗 More: <a href="${metadata.artist_url}" class="text-blue-400 underline">Visit Artist Profile</a>`;
+                outputBox.insertAdjacentHTML("beforeend", link);
+            });
+        } else {
+            typeWriterEffect(outputBox, '❌ ' + data.message);
+        }
+    })
+    .catch(error => {
+        outputBox.innerHTML = '❌ Failed to scan QR code.';
+        console.error(error);
+    });
+});
+
 </script>
 {% endblock %}

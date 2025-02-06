@@ -63,7 +63,6 @@ def edit_profile():
 def upload_artwork():
     form = ArtworkForm()
     if form.validate_on_submit():
-        # Save the uploaded image
         image_file = form.image.data
         filename = secure_filename(image_file.filename)
         upload_folder = current_app.config['ARTWORKS_UPLOAD_FOLDER']
@@ -71,10 +70,11 @@ def upload_artwork():
         image_path = os.path.join(upload_folder, filename)
         image_file.save(image_path)
 
-        # Generate QR code linking to the artist's profile
+        # Generate metadata & QR
         artist_profile_url = url_for('main.artist_profile', username=current_user.username, _external=True)
-        output_path = embed_qr_code(image_path, artist_profile_url)
+        output_path = embed_qr_code(image_path, artist_profile_url, current_user.username, form.title.data)
 
+        # Save to DB
         artwork = Artwork(
             title=form.title.data,
             description=form.description.data,
@@ -86,25 +86,26 @@ def upload_artwork():
 
         flash('Artwork uploaded successfully!', 'success')
         return redirect(url_for('main.gallery'))
+
     return render_template('upload_artwork.html', form=form)
 
 @main_routes.route('/scan_qr', methods=['POST'])
 def scan_qr():
-    """Scan an artwork for an embedded QR code"""
+    """Scan an artwork for embedded metadata"""
     data = request.get_json()
     image_url = data.get("image_url")
 
     if not image_url:
         return jsonify({"success": False, "message": "No image URL provided."})
 
-    # Convert relative URL to absolute file path
     image_path = os.path.join(current_app.root_path, 'static', image_url.split('static/')[-1])
 
     try:
-        artist_url = scan_qr_code(image_path)
-        return jsonify({"success": True, "message": f"✓ Verification successful! Artist URL: {artist_url}"})
+        metadata = scan_qr_code(image_path)
+        return jsonify({"success": True, "metadata": metadata})
     except Exception as e:
         return jsonify({"success": False, "message": f"❌ Error: {str(e)}"})
+
 
 @main_routes.route('/artwork/<int:artwork_id>')
 def artwork_detail(artwork_id):
