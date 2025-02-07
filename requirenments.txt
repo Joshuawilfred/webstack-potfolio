@@ -1,4 +1,0 @@
-email_validator
-pip install Flask Flask-Login Flask-WTF Flask-SQLAlchemy qrcode stegano Pillow
-pip install werkzeug
-pip install secret

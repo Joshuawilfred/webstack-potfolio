@@ -3,5 +3,7 @@ __pycache__/
 *.pyc
 *.db
 .prettierrc
-
+tailwind*
+guide.txt
 app/static/uploads
+feed/assets
