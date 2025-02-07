@@ -1,5 +1,5 @@
 # routes.py
-from flask import Blueprint, render_template, redirect, url_for, flash, request, current_app, jsonify, session
+from flask import Blueprint, render_template, redirect, url_for, flash, request, current_app, jsonify, session, make_response
 from flask_login import login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
@@ -111,6 +111,12 @@ def scan_qr():
 def artwork_detail(artwork_id):
     artwork = Artwork.query.get_or_404(artwork_id)
     return render_template('artwork_detail.html', artwork=artwork)
+
+# Cache for 7 days
+@main_routes.after_request
+def add_cache_control(response):
+    response.headers["Cache-Control"] = "public, max-age=604800"
+    return response
 
 # Create a Blueprint for authentication routes_
 auth_routes = Blueprint('auth', __name__)
