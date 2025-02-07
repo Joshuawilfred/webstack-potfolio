@@ -15,16 +15,21 @@
         </p>
 
         <!-- Search Bar -->
-        <div
-            class="flex items-center border focus-within:border-indigo-500 transition duration-300 pr-3 gap-2 bg-white border-gray-500/30 rounded-full relative overflow-hidden"
-        >
-            <input
-                type="text"
-                placeholder="Search for artists or artworks..."
-                class="input rounded-full px-8 py-3 border-2 border-transparent w-full h-full pl-4 outline-none placeholder-gray-500 text-sm"
-            />
-            <i data-feather="search" class="w-6 h-6 text-gray-500"></i>
-        </div>
+        <form action="{{ url_for('main.search')}}" method="GET">
+            <div
+                class="flex items-center border focus-within:border-indigo-500 transition duration-300 pr-3 gap-2 bg-white border-gray-500/30 rounded-full relative overflow-hidden"
+            >
+                <input
+                    type="text"
+                    name="q"
+                    placeholder="Search for artists or artworks..."
+                    class="input rounded-full px-8 py-3 border-2 border-transparent w-full h-full pl-4 outline-none placeholder-gray-500 text-sm"
+                />
+                <button type="submit">
+                    <i data-feather="search" class="w-6 h-6 text-gray-500"></i>
+                </button>
+            </div>
+        </form>
     </div>
 </div>
 {% endblock %}

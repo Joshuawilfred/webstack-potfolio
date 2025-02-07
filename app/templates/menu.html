@@ -33,6 +33,11 @@
                 <i data-feather="compass" class="w-6 h-6"></i>
                 <span class="hidden md:block">Explore</span>
             </a>
+            <a href="{{ url_for('main.index') }}" 
+               class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-100">
+                <i data-feather="search" class="w-6 h-6"></i>
+                <span class="hidden md:block">Search</span>
+            </a>
             <a href="{{ url_for('main.upload_artwork') }}" 
                class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-100">
                 <i data-feather="upload" class="w-6 h-6"></i>
@@ -56,7 +61,7 @@
 
 <!-- Mobile bottom menu for authenticated users -->
 {% if current_user.is_authenticated %}
-<nav class="md:hidden fixed bottom-0 left-0 right-0 bg-white shadow-lg z-50">
+<nav class="md:hidden fixed bottom-0 left-0 right-0 bg-white shadow-lg z-50 mt-20">
     <div class="flex justify-around p-4">
         <a href="{{ url_for('main.gallery') }}" class="text-gray-700">
             <i data-feather="compass" class="w-6 h-6"></i>

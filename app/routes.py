@@ -118,6 +118,20 @@ def add_cache_control(response):
     response.headers["Cache-Control"] = "public, max-age=604800"
     return response
 
+@main_routes.route('/search')
+def search():
+    query = request.args.get('q', '').strip()
+
+    if not query:
+        flash("Please enter a search term.", "warning")
+        return redirect(url_for('main.gallery'))
+
+    # Search for matching artists and artworks
+    artists = User.query.filter(User.username.ilike(f"%{query}%")).all()
+    artworks = Artwork.query.filter(Artwork.title.ilike(f"%{query}%")).all()
+
+    return render_template('search_results.html', query=query, artists=artists, artworks=artworks)
+
 # Create a Blueprint for authentication routes_
 auth_routes = Blueprint('auth', __name__)
 
