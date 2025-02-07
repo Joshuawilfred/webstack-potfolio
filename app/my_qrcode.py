@@ -11,6 +11,10 @@ from pyzbar.pyzbar import decode
 def embed_qr_code(image_path, artist_url, artist_name, artwork_title):
     """Embed QR code & metadata inside image"""
     try:
+        # Ensure source image exists
+        if not os.path.exists(image_path):
+            raise Exception(f"Source image not found: {image_path}")
+
         # Convert image to PNG (lossless)
         artwork_img = Image.open(image_path).convert("RGB")
         png_path = image_path.rsplit(".", 1)[0] + ".png"
@@ -37,11 +41,20 @@ def embed_qr_code(image_path, artist_url, artist_name, artwork_title):
         }
         metadata_str = json.dumps(metadata)
 
+        # Ensure output directory exists
+        output_dir = os.path.join('app', 'static', 'uploads', 'artworks')
+        os.makedirs(output_dir, exist_ok=True)
+
         # Hide metadata in image
+        output_path = os.path.join(output_dir, f"encoded_{os.path.basename(png_path)}").replace("\\", "/")
         secret_img = lsb.hide(png_path, metadata_str)
-        output_path = os.path.join('app', 'static', 'uploads', 'artworks', f"encoded_{os.path.basename(png_path)}").replace("\\", "/")
         secret_img.save(output_path)
 
+        # Confirm file was saved
+        if not os.path.exists(output_path):
+            raise Exception(f"Failed to save encoded image: {output_path}")
+
+        print(f"✅ Encoded image saved at {output_path}")
         return output_path
 
     except Exception as e:

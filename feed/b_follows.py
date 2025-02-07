@@ -2,7 +2,7 @@ import sqlite3
 import random
 from datetime import datetime
 
-DB_PATH = "../instance/art_gallery.db"
+DB_PATH = "instance/art_gallery.db"
 
 def populate_follows():
     conn = sqlite3.connect(DB_PATH)

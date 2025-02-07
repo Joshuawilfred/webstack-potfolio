@@ -2,7 +2,7 @@ import sqlite3
 import random
 from werkzeug.security import generate_password_hash
 
-db_path = "../instance/art_gallery.db"
+db_path = "instance/art_gallery.db"
 
 users = [
     "Boston Public Library", "MCGill Library", "Brimingham", "Boston Public Library", "Andres Gomez",
@@ -17,7 +17,7 @@ additional_names = [
     "Gabriela Costa", "David Stein", "Ananya Sharma", "Sven Lindberg", "Leila Haddad",
     "Lucas Moreau", "Carlos Mendes", "Yasmin Said", "Mohammed Reza", "Hannah Becker",
     "Zain Malik", "Camila Rojas", "Tariq Khan", "Simone Ricci", "Amina Yusuf",
-    "Oliver Smith", "Nia Roberts", "Wei Zhang", "Fatou Diop"
+    "Oliver Smith", "Nia Roberts", "Wei Zhang", "Fatou Diop", "Joshua Wilfred"
 ]
 
 bios = [

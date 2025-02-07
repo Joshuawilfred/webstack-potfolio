@@ -6,3 +6,7 @@ class Config:
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     UPLOAD_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'app', 'static', 'uploads')
     ARTWORKS_UPLOAD_FOLDER = os.path.join(UPLOAD_FOLDER, 'artworks')
+
+    # Ensure upload directories exist
+    os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+    os.makedirs(ARTWORKS_UPLOAD_FOLDER, exist_ok=True)

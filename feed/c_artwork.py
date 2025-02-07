@@ -1,14 +1,16 @@
 import os
+import sys
 import sqlite3
 from datetime import datetime
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from app.my_qrcode import embed_qr_code
 from app.models import User
 
 # Database Path
-DB_PATH = "../instance/art_gallery.db"
+DB_PATH = "instance/art_gallery.db"
 
 # Artwork Upload Folder
-UPLOAD_FOLDER = "../app/static/uploads/artworks/"
+UPLOAD_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'app', 'static', 'uploads', 'artworks')
 
 # Ensure upload directory exists
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
@@ -40,9 +42,14 @@ def insert_artwork_with_qr(image_filename, title, description, artist_email):
         return
     
     # Paths
-    image_path = os.path.join("assets", image_filename)  # Original location
+    image_path = os.path.join("feed/assets", image_filename)  # Original location / source image
     saved_path = os.path.join(UPLOAD_FOLDER, image_filename)  # Save location
 
+    # Ensure source image exists
+    if not os.path.exists(image_path):
+        print(f"❌ Source image missing: {image_path}")
+        return
+    
     # Generate Artist Profile URL
     artist_username = get_artist_username(artist_id)
     artist_profile_url = f"http://localhost:5000/artist/{artist_username}"
@@ -50,6 +57,12 @@ def insert_artwork_with_qr(image_filename, title, description, artist_email):
     # Embed QR Code & Save Image
     try:
         encoded_image_path = embed_qr_code(image_path, artist_profile_url, artist_username, title)
+        
+        # Ensure encoded image was created
+        if not encoded_image_path or not os.path.exists(encoded_image_path):
+            print(f"❌ Failed to generate encoded image for {image_filename}")
+            return
+        
     except Exception as e:
         print(f"❌ Error embedding QR for {image_filename}: {e}")
         return

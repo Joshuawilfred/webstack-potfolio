@@ -72,42 +72,42 @@ insert_artwork_with_qr(
    "J-arts-BABY-PORTRAIT.png",
    "Innocent Wonder",
    "Intimate portrait capturing the pure essence of infancy.",
-   "joshuakaaya216@gmail.com"
+   "joshuawilfred@gmail.com"
 )
 
 insert_artwork_with_qr(
    "J-arts-FAMILY-PORTRAIT.png",
    "Bonds of Love",
    "Warm portrayal of family unity and connection.",
-   "joshuakaaya216@gmail.com"
+   "joshuawilfred@gmail.com"
 )
 
 insert_artwork_with_qr(
    "J-arts-GIRL-AND-DOVE.png",
    "Peace Whispers",
    "Young girl sharing a moment with a dove symbolizing innocence.",
-   "joshuakaaya216@gmail.com"
+   "joshuawilfred@gmail.com"
 )
 
 insert_artwork_with_qr(
    "J-arts-KEEPING-THE-DREAM-ALIVE.png",
    "Dream Keeper",
    "Artistic representation of preserving hopes and aspirations.",
-   "joshuakaaya216@gmail.com"
+   "joshuawilfred@gmail.com"
 )
 
 insert_artwork_with_qr(
    "J-arts-MAGUFULI.png",
    "Leadership Portrait",
    "Distinguished portrayal of political figure Magufuli.",
-   "joshuakaaya216@gmail.com"
+   "joshuawilfred@gmail.com"
 )
 
 insert_artwork_with_qr(
    "J-arts-WALKER.png",
    "Retrospective Journey",
    "Young boy walking while looking behind, suggesting reflection.",
-   "joshuakaaya216@gmail.com"
+   "joshuawilfred@gmail.com"
 )
 
 insert_artwork_with_qr(

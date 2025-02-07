@@ -20,6 +20,7 @@ This is a web application that allows artists to upload, share, and manage their
 ## Prerequisites
 
 - Python 3.10+
+- Flask 3.0.2
 - pip (Python package manager)
 
 ## Installation
@@ -40,33 +41,10 @@ This is a web application that allows artists to upload, share, and manage their
    ```bash
    pip install -r requirements.txt
    ```
-
-## Database Setup and Seeding (Optional)
-
-To populate the database with initial data: Download the [image assets](https://drive.google.com/drive/folders/1kwspMHvuyZdLkL4KMU_-xghEOWY1mJym?usp=drive_link) here and save it in `feed/assets`
-
-1. Run user creation script:
-   ```bash
-   python feed/a_names.py
-   ```
-
-2. Create follow relationships:
-   ```bash
-   python feed/b_follows.py
-   ```
-
-3. Add artwork data:
-   ```bash
-   cat feed/c_data.py >> feed/c_artwork.py
-   ```
-   ```bash
-   python feed/c_artwork.py
-   ```
-
 ## Running the Application
 
 ```bash
-python run.py
+python3 run.py
 ```
 
 The application will start on `http://localhost:5000`
@@ -83,14 +61,37 @@ The application will start on `http://localhost:5000`
         ```python
         artist_profile_url = f"http://localhost:5001/artist/{artist_username}"
         ```
+
+## Database Setup and Seeding (Optional)
+
+To populate the database with initial data: Download the [image assets](https://drive.google.com/drive/folders/1kwspMHvuyZdLkL4KMU_-xghEOWY1mJym?usp=drive_link) here and save it in `feed/assets`
+
+1. Run user creation script:
+   ```bash
+   python3 feed/a_names.py
+   ```
+
+2. Create follow relationships:
+   ```bash
+   python3 feed/b_follows.py
+   ```
+
+3. Add artwork data:
+   ```bash
+   cat feed/c_data.py >> feed/c_artwork.py
+   ```
+   ```bash
+   python3 feed/c_artwork.py
+   ```
+
 ## CLI Tool:
   - **Embed QR Code**:
     ```bash
-    python app/cli.py embed path/to/image.png "http://example.com/artist/username"
+    python3 app/cli.py embed path/to/image.png "http://example.com/artist/username"
     ```
   - **Scan QR Code**:
     ```bash
-    python app/cli.py scan  path/to/encoded-image.png
+    python3 app/cli.py scan  path/to/encoded-image.png
     ```
 
 ## License
