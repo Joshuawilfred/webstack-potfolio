@@ -22,6 +22,15 @@ def get_artist_id(email):
     conn.close()
     return artist[0] if artist else None
 
+def get_artist_username(artist_id):
+    """Fetch artist username from the database using ID."""
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    cursor.execute("SELECT username FROM user WHERE id = ?", (artist_id,))
+    artist = cursor.fetchone()
+    conn.close()
+    return artist[0] if artist else None
+
 def insert_artwork_with_qr(image_filename, title, description, artist_email):
     """Embed QR code, save image, and insert artwork into DB."""
     
@@ -35,11 +44,12 @@ def insert_artwork_with_qr(image_filename, title, description, artist_email):
     saved_path = os.path.join(UPLOAD_FOLDER, image_filename)  # Save location
 
     # Generate Artist Profile URL
-   artist_profile_url = f"http://localhost:5000/artist/{User.query.get(artist_id).username}"
+    artist_username = get_artist_username(artist_id)
+    artist_profile_url = f"http://localhost:5000/artist/{artist_username}"
 
     # Embed QR Code & Save Image
     try:
-        encoded_image_path = embed_qr_code(image_path, artist_profile_url, artist_email, title)
+        encoded_image_path = embed_qr_code(image_path, artist_profile_url, artist_username, title)
     except Exception as e:
         print(f"❌ Error embedding QR for {image_filename}: {e}")
         return
